@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Movie {
+  id                  Int                 @id @default(autoincrement())
+  title               String
+  originalTitle       String
+  runtime             Int
+  language            String
+  mpaaRating          String
+  synopsis            String
+  tagLine             String
+  budget              Int
+  genre               String
+  duration            String @default("0")
+  createdAt           DateTime
+  updatedAt           DateTime
+  cast                Cast[]
+  crews               Crew[]
+  productionCompanies ProductionCompany[]
+  schedule           Schedule[]
+}
+
+model Schedule {
+  id        Int      @id @default(autoincrement())
+  movieId   Int
+  theaterId Int
+  startTime DateTime
+  endTime   DateTime
+  movie     Movie    @relation(fields: [movieId], references: [id])
+  theater   Theater  @relation(fields: [theaterId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Theater {
+  id            Int      @id @default(autoincrement())
+  name         String
+  address      String
+  capacity     Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  schedule           Schedule[]
+}
+
+model Cast {
+  id        Int      @id @default(autoincrement())
+  movieId   Int
+  actorName String
+  role      String
+  createdAt DateTime
+  updatedAt DateTime
+  movie     Movie    @relation(fields: [movieId], references: [id])
+}
+
+model Crew {
+  id        Int      @id @default(autoincrement())
+  movieId   Int      
+  crewName  String
+  role      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  movie     Movie    @relation(fields: [movieId], references: [id])
+}
+
+model ProductionCompany {
+  id          Int      @id @default(autoincrement())
+  movieId     Int
+  companyName String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  movie       Movie    @relation(fields: [movieId], references: [id])
+}
+
+
